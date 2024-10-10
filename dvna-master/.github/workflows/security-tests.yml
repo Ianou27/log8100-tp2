@@ -10,7 +10,7 @@ on:
 
 jobs:
   security-tests:
-    name: Run Security Tests
+    name: Run CodeQL and Snyk Security Tests
     runs-on: ubuntu-latest
 
     steps:
@@ -18,29 +18,24 @@ jobs:
     - name: Checkout code
       uses: actions/checkout@v3
 
-    # Step 2: Set up Docker for OWASP ZAP
-    - name: Set up Docker for OWASP ZAP
-      run: |
-        docker pull ghcr.io/zaproxy/zaproxy:stable
-        docker pull zaproxy/zap-stable
-        docker run -u zap -v ${pwd}:/zap/wrk/:rw -t zaproxy/zap-stable zap-baseline.py -t http://192.168.56.1:9090 -g gen.conf -x zap_report.xml -r zap_report.html
-
-    # Step 3: Upload ZAP Report
-    - name: Upload ZAP Report
-      uses: actions/upload-artifact@v3
+    # Step 2: Set up CodeQL for static code analysis
+    - name: Initialize CodeQL
+      uses: github/codeql-action/init@v2
       with:
-        name: ZAP Report
-        path: zap_report.html
+        languages: 'javascript' # Update this to your project language, e.g., 'python', 'go', etc.
 
-    # Step 4: Run Snyk.io to check for vulnerabilities in dependencies
+    - name: Perform CodeQL Analysis
+      uses: github/codeql-action/analyze@v2
+
+    # Step 3: Run Snyk.io to check for vulnerabilities in dependencies
     - name: Run Snyk Test
-      uses: snyk/actions/docker@v1
+      uses: snyk/actions@v1
       with:
         command: monitor
       env:
         SNYK_TOKEN: ${{ secrets.SNYK_TOKEN }}
 
-    # Step 5: Upload the results of Snyk Test
+    # Step 4: Upload the results of Snyk Test
     - name: Upload Snyk Report
       uses: actions/upload-artifact@v3
       with:
