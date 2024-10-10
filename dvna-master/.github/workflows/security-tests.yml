@@ -1,5 +1,6 @@
 name: Security Tests
 
+# Trigger workflow on push or pull request to main or manually
 on:
   push:
     branches:
@@ -7,6 +8,7 @@ on:
   pull_request:
     branches:
       - main
+  workflow_dispatch:  # Allows you to manually trigger the workflow from the GitHub UI
 
 jobs:
   security-tests:
@@ -14,26 +16,31 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-    - name: Checkout code
-      uses: actions/checkout@v3
+      # Step 1: Checkout the repository code
+      - name: Checkout code
+        uses: actions/checkout@v3
 
-    - name: Initialize CodeQL
-      uses: github/codeql-action/init@v2
-      with:
-        languages: 'javascript'  # Modify to your project language
+      # Step 2: Set up CodeQL for static code analysis
+      - name: Initialize CodeQL
+        uses: github/codeql-action/init@v2
+        with:
+          languages: 'javascript'  # Replace with the correct language for your project (e.g., 'python', 'go', etc.)
 
-    - name: Perform CodeQL Analysis
-      uses: github/codeql-action/analyze@v2
+      # Step 3: Run CodeQL Analysis
+      - name: Perform CodeQL Analysis
+        uses: github/codeql-action/analyze@v2
 
-    - name: Run Snyk Test
-      uses: snyk/actions@v1
-      with:
-        command: monitor
-      env:
-        SNYK_TOKEN: ${{ secrets.SNYK_TOKEN }}
+      # Step 4: Run Snyk.io to check for vulnerabilities in dependencies
+      - name: Run Snyk Test
+        uses: snyk/actions@v1
+        with:
+          command: monitor
+        env:
+          SNYK_TOKEN: ${{ secrets.SNYK_TOKEN }}  # Ensure you add your Snyk token in GitHub Secrets
 
-    - name: Upload Snyk Report
-      uses: actions/upload-artifact@v3
-      with:
-        name: Snyk Report
-        path: snyk_report.html
+      # Step 5: Upload Snyk Report
+      - name: Upload Snyk Report
+        uses: actions/upload-artifact@v3
+        with:
+          name: Snyk Report
+          path: snyk_report.html
