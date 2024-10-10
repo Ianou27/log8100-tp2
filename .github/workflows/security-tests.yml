@@ -31,7 +31,7 @@ jobs:
 
       # Step 4: Set up Snyk
       - name: Set up Snyk
-        uses: snyk/actions/setup@v2
+        uses: snyk/actions/setup@master  # Changed from v2 to master
         with:
           version: 'latest'  # You can specify a version if needed
 
