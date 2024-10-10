@@ -14,20 +14,17 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-    # Step 1: Checkout the code
     - name: Checkout code
       uses: actions/checkout@v3
 
-    # Step 2: Set up CodeQL for static code analysis
     - name: Initialize CodeQL
       uses: github/codeql-action/init@v2
       with:
-        languages: 'javascript' # Update this to your project language, e.g., 'python', 'go', etc.
+        languages: 'javascript'  # Modify to your project language
 
     - name: Perform CodeQL Analysis
       uses: github/codeql-action/analyze@v2
 
-    # Step 3: Run Snyk.io to check for vulnerabilities in dependencies
     - name: Run Snyk Test
       uses: snyk/actions@v1
       with:
@@ -35,7 +32,6 @@ jobs:
       env:
         SNYK_TOKEN: ${{ secrets.SNYK_TOKEN }}
 
-    # Step 4: Upload the results of Snyk Test
     - name: Upload Snyk Report
       uses: actions/upload-artifact@v3
       with:
