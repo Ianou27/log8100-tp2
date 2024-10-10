@@ -1,0 +1,32 @@
+services:
+  dvna:
+    build:
+      context: ./
+      dockerfile: Dockerfile 
+    ports:
+      - "9090:9090"
+    depends_on:
+      - db
+    networks:
+      - dvnaNet
+    env_file:
+      - ./vars.env
+
+  db:
+    image: postgres:14
+    container_name: dvna_db
+    expose:
+      - "5432"
+    networks:
+      - dvnaNet
+    volumes:
+      - db_data:/var/lib/postgresql/data
+    env_file:
+      - ./vars.env
+
+networks:
+  dvnaNet:
+    driver: bridge
+
+volumes:
+  db_data:

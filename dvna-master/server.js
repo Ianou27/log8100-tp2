@@ -38,6 +38,6 @@ app.use('/app',require('./routes/app')())
 app.use('/',require('./routes/main')(passport))
 
 // Start Server
-app.listen(3000, () => {
+app.listen(9090, () => {
   console.log('Server is running on http://localhost:3000');
 });
