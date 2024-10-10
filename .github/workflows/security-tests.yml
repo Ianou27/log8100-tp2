@@ -1,6 +1,5 @@
 name: Security Tests
 
-# Trigger workflow on push or pull request to main or manually
 on:
   push:
     branches:
@@ -8,7 +7,7 @@ on:
   pull_request:
     branches:
       - main
-  workflow_dispatch:  # Allows you to manually trigger the workflow from the GitHub UI
+  workflow_dispatch:  # Allows you to manually trigger the workflow
 
 jobs:
   security-tests:
@@ -30,15 +29,19 @@ jobs:
       - name: Perform CodeQL Analysis
         uses: github/codeql-action/analyze@v2
 
-      # Step 4: Run Snyk.io to check for vulnerabilities in dependencies
-      - name: Run Snyk Test
-        uses: snyk/actions@v1
+      # Step 4: Set up Snyk
+      - name: Set up Snyk
+        uses: snyk/actions/setup@v2
         with:
-          command: monitor
-        env:
-          SNYK_TOKEN: ${{ secrets.SNYK_TOKEN }}  # Ensure you add your Snyk token in GitHub Secrets
+          version: 'latest'  # You can specify a version if needed
 
-      # Step 5: Upload Snyk Report
+      # Step 5: Run Snyk Test
+      - name: Run Snyk test
+        run: snyk test --all-projects
+        env:
+          SNYK_TOKEN: ${{ secrets.SNYK_TOKEN }}
+
+      # Step 6: Upload Snyk Report
       - name: Upload Snyk Report
         uses: actions/upload-artifact@v3
         with:
