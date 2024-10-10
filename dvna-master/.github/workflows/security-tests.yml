@@ -1,0 +1,47 @@
+name: Security Tests
+
+on:
+  push:
+    branches:
+      - main
+  pull_request:
+    branches:
+      - main
+
+jobs:
+  security-tests:
+    name: Run Security Tests
+    runs-on: ubuntu-latest
+
+    steps:
+    # Step 1: Checkout the code
+    - name: Checkout code
+      uses: actions/checkout@v3
+
+    # Step 2: Set up Docker for OWASP ZAP
+    - name: Set up Docker for OWASP ZAP
+      run: |
+        docker pull owasp/zap2docker-stable
+        docker run -u zap -v $(pwd):/zap/wrk/:rw -t owasp/zap2docker-stable zap-baseline.py -t http://localhost:3000 -g gen.conf -r zap_report.html
+
+    # Step 3: Upload ZAP Report
+    - name: Upload ZAP Report
+      uses: actions/upload-artifact@v3
+      with:
+        name: ZAP Report
+        path: zap_report.html
+
+    # Step 4: Run Snyk.io to check for vulnerabilities in dependencies
+    - name: Run Snyk Test
+      uses: snyk/actions/docker@v1
+      with:
+        command: monitor
+      env:
+        SNYK_TOKEN: ${{ secrets.SNYK_TOKEN }}  # Add your Snyk token in GitHub Secrets
+
+    # Step 5: Upload the results of Snyk Test
+    - name: Upload Snyk Report
+      uses: actions/upload-artifact@v3
+      with:
+        name: Snyk Report
+        path: snyk_report.html
