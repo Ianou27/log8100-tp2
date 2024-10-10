@@ -21,8 +21,9 @@ jobs:
     # Step 2: Set up Docker for OWASP ZAP
     - name: Set up Docker for OWASP ZAP
       run: |
-        docker pull owasp/zap2docker-stable
-        docker run -u zap -v $(pwd):/zap/wrk/:rw -t owasp/zap2docker-stable zap-baseline.py -t http://localhost:3000 -g gen.conf -r zap_report.html
+        docker pull ghcr.io/zaproxy/zaproxy:stable
+        docker pull zaproxy/zap-stable
+        docker run -u zap -v ${pwd}:/zap/wrk/:rw -t zaproxy/zap-stable zap-baseline.py -t http://192.168.56.1:9090 -g gen.conf -x zap_report.xml -r zap_report.html
 
     # Step 3: Upload ZAP Report
     - name: Upload ZAP Report
