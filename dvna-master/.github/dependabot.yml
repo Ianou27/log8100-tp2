@@ -1,25 +1,23 @@
+# Adding a comment to trigger a Dependabot run
 version: 2
 updates:
-  # For npm dependencies
-  - package-ecosystem: "npm"
-    directory: "/" # Location of package.json
-    schedule:
-      interval: "daily"
-    commit-message:
-      prefix: "[force-update]"  # This is just a comment added for force triggering Dependabot
-
-  # For Docker dependencies
-  - package-ecosystem: "docker"
-    directory: "/" # Location of Dockerfile
-    schedule:
-      interval: "daily"
-    commit-message:
-      prefix: "[force-update]"
-
-  # For GitHub Actions dependencies
+  # Check for updates to GitHub Actions
   - package-ecosystem: "github-actions"
-    directory: "/.github/workflows"
+    directory: "/"
     schedule:
       interval: "daily"
-    commit-message:
-      prefix: "[force-update]"
+    open-pull-requests-limit: 10
+
+  # Check for updates to npm dependencies
+  - package-ecosystem: "npm"
+    directory: "/"
+    schedule:
+      interval: "daily"
+    open-pull-requests-limit: 10
+
+  # Check for updates to Docker dependencies
+  - package-ecosystem: "docker"
+    directory: "/"
+    schedule:
+      interval: "daily"
+    open-pull-requests-limit: 10
