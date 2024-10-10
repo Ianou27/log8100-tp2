@@ -1,14 +1,25 @@
 version: 2
 updates:
+  # For npm dependencies
   - package-ecosystem: "npm"
-    directory: "/"
+    directory: "/" # Location of package.json
     schedule:
       interval: "daily"
+    commit-message:
+      prefix: "[force-update]"  # This is just a comment added for force triggering Dependabot
+
+  # For Docker dependencies
   - package-ecosystem: "docker"
-    directory: "/"
+    directory: "/" # Location of Dockerfile
     schedule:
       interval: "daily"
+    commit-message:
+      prefix: "[force-update]"
+
+  # For GitHub Actions dependencies
   - package-ecosystem: "github-actions"
-    directory: "/.github/workflows/"
+    directory: "/.github/workflows"
     schedule:
       interval: "daily"
+    commit-message:
+      prefix: "[force-update]"
