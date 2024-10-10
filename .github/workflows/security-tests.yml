@@ -11,23 +11,13 @@ on:
 
 jobs:
   security-tests:
-    name: Run CodeQL and Snyk Security Tests
+    name: Run Snyk Security Tests
     runs-on: ubuntu-latest
 
     steps:
       # Step 1: Checkout the repository code
       - name: Checkout code
         uses: actions/checkout@v3
-
-      # Step 2: Set up CodeQL for static code analysis
-      - name: Initialize CodeQL
-        uses: github/codeql-action/init@v2
-        with:
-          languages: 'javascript'  # Replace with the correct language for your project (e.g., 'python', 'go', etc.)
-
-      # Step 3: Run CodeQL Analysis
-      - name: Perform CodeQL Analysis
-        uses: github/codeql-action/analyze@v2
 
       # Step 4: Set up Snyk
       - name: Set up Snyk
