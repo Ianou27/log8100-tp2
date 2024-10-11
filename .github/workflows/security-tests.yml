@@ -27,7 +27,7 @@ jobs:
 
       # Step 3: Run Snyk Test with Debugging
       - name: Run Snyk test
-        run: DEBUG=*snyk* snyk test --all-projects
+        run: snyk test 
         env:
           SNYK_TOKEN: ${{ secrets.SNYK_TOKEN }}
 
