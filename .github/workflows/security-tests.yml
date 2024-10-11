@@ -1,4 +1,4 @@
-name: Security Tests
+name: Snyk Security Tests
 
 on:
   push:
@@ -19,23 +19,19 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v3
 
-      # Step 2: Install dependencies (for example, for Node.js)
-      - name: Install dependencies
-        run: npm install
-
-      # Step 3: Set up Snyk
+      # Step 2: Set up Snyk
       - name: Set up Snyk
         uses: snyk/actions/setup@master
         with:
           version: 'latest'
 
-      # Step 4: Run Snyk Test with Debugging
+      # Step 3: Run Snyk Test with Debugging
       - name: Run Snyk test
         run: DEBUG=*snyk* snyk test --all-projects
         env:
           SNYK_TOKEN: ${{ secrets.SNYK_TOKEN }}
 
-      # Step 5: Upload Snyk Report
+      # Step 4: Upload Snyk Report
       - name: Upload Snyk Report
         uses: actions/upload-artifact@v3
         with:
