@@ -38,7 +38,7 @@ jobs:
 
       # Step 5: Upload Snyk Report
       - name: Upload Snyk Report
-        uses: actions/upload-artifact@v3
+        uses: actions/upload-artifact@v4
         with:
           name: Snyk Report
           path: snyk_report.html
