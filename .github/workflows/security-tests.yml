@@ -19,19 +19,24 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v3
 
-      # Step 2: Set up Snyk
+      # Step 2: Install dependencies for the dvna-master project
+      - name: Install dependencies
+        run: npm install
+        working-directory: dvna-master  # Ensures npm install runs in the dvna-master directory
+
+      # Step 3: Set up Snyk
       - name: Set up Snyk
         uses: snyk/actions/setup@master
         with:
           version: 'latest'
 
-      # Step 3: Run Snyk Test on dvna-master directory
+      # Step 4: Run Snyk Test on dvna-master directory
       - name: Run Snyk test
-        run: snyk test --file=dvna-master/package.json  
+        run: snyk test --file=dvna-master/package.json
         env:
           SNYK_TOKEN: ${{ secrets.SNYK_TOKEN }}
 
-      # Step 4: Upload Snyk Report
+      # Step 5: Upload Snyk Report
       - name: Upload Snyk Report
         uses: actions/upload-artifact@v3
         with:
