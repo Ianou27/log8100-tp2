@@ -25,9 +25,9 @@ jobs:
         with:
           version: 'latest'
 
-      # Step 3: Run Snyk Test with Debugging
+      # Step 3: Run Snyk Test on dvna-master directory
       - name: Run Snyk test
-        run: snyk test 
+        run: snyk test --file=dvna-master/package.json  
         env:
           SNYK_TOKEN: ${{ secrets.SNYK_TOKEN }}
 
