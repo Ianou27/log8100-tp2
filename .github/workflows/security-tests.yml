@@ -17,22 +17,15 @@ jobs:
     steps:
       # Step 1: Checkout the repository code
       - name: Checkout code
-        uses: actions/checkout@v3
-
-      # Step 2: Install dependencies for the dvna-master project
-      - name: Install dependencies
-        run: npm install
-        working-directory: dvna-master  # Ensures npm install runs in the dvna-master directory
+        uses: actions/checkout@master
 
       # Step 3: Set up Snyk
       - name: Set up Snyk
         uses: snyk/actions/setup@master
-        with:
-          version: 'latest'
 
       # Step 4: Run Snyk Test on dvna-master directory
       - name: Run Snyk test
-        run: snyk test --file=dvna-master/package.json
+        run: snyk test
         env:
           SNYK_TOKEN: ${{ secrets.SNYK_TOKEN }}
 
