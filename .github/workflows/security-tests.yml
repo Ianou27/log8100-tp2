@@ -37,13 +37,20 @@ jobs:
 
       # Step 4: Run Snyk Test on dvna-master directory
       - name: Run Snyk test
-        run: snyk test
+        run: snyk test --sarif  > snyk_results.sarif
+        continue-on-error: true
         env:
           SNYK_TOKEN: ${{ secrets.SNYK_TOKEN }}
 
       # Step 5: Upload Snyk Report
-      - name: Upload Snyk Report
-        uses: actions/upload-artifact@v3
+      #- name: Upload Snyk Report
+      #  uses: actions/upload-artifact@v3
+      #  with:
+      #    name: Snyk Report
+      #    path: snyk_report.html
+
+      - name: Upload SARIF file
+        uses: github/codeql-action/upload-sarif@v2
         with:
-          name: Snyk Report
-          path: snyk_report.html
+          # Path to SARIF file relative to the root of the repository
+          sarif_file: snyk_results.sarif
