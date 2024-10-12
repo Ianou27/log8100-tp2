@@ -38,7 +38,7 @@ jobs:
 
       # Step 4: Run Snyk Test on dvna-master directory
       - name: Run Snyk test
-        run: snyk test --sarif  > snyk_results.sarif
+        run: snyk test --sarif-file-output=snyk.sarif
         continue-on-error: true
         env:
           SNYK_TOKEN: ${{ secrets.SNYK_TOKEN }}
