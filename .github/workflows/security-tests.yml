@@ -13,9 +13,6 @@ jobs:
   security-tests:
     name: Run Snyk Security Tests
     runs-on: ubuntu-latest
-    permissions:
-      # required for all workflows
-      security-events: write
 
     steps:
       # Step 1: Checkout the repository code
