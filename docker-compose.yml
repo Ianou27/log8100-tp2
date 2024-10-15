@@ -1,5 +1,6 @@
 services:
   dvna:
+    image: ianou27/log8100_tp2:latest
     build:
       context: ./
       dockerfile: Dockerfile 
