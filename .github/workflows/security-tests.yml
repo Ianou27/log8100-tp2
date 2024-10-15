@@ -23,20 +23,21 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v3
       
-      # Step 2: Set up Node.js 16
+      # Step 2: Set up Node.js 18
       - name: Set up Node.js
         uses: actions/setup-node@v3
         with:
-          node-version: '16'
+          node-version: '18'
       
       # Step 3: Install project dependencies
       - name: Install project dependencies
-        run: npm install
+        run: |
+          npm install --no-optional
+          npm install snyk -g
       
-      # Step 4: Install and run Snyk
+      # Step 4: Run Snyk to check for vulnerabilities
       - name: Run Snyk to check for vulnerabilities
         run: |
-          npm install -g snyk
           snyk test --json-file-output=snyk.json || true
           snyk test --sarif-file-output=snyk.sarif || true
         env:
@@ -66,9 +67,8 @@ jobs:
       # Step 8: Generate HTML report from JSON (optional)
       - name: Generate HTML report
         run: |
-          npm install -g snyk-to-html
           if [ -f snyk.json ]; then
-            cat snyk.json | snyk-to-html -o snyk-results.html
+            npx snyk-to-html -i snyk.json -o snyk-results.html
           else
             echo "JSON file does not exist. Cannot generate HTML report."
           fi
