@@ -23,15 +23,17 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v3
       
-      - name: Get Node v8
+      # Step 2: Set up Node.js 16
+      - name: Set up Node.js
         uses: actions/setup-node@v3
         with:
-          node-version: 8.17.0
+          node-version: '16'
       
-      - name: Install dependencies
-        run: npm install
-        
-      # Step 2: Run Snyk to check for vulnerabilities and generate SARIF
+      # Step 3: Install project dependencies
+      - name: Install project dependencies
+        run: npm ci
+      
+      # Step 4: Install and run Snyk
       - name: Run Snyk to check for vulnerabilities
         run: |
           npm install -g snyk
@@ -40,11 +42,11 @@ jobs:
         env:
           SNYK_TOKEN: ${{ secrets.SNYK_TOKEN }}
 
-      # Step 3: List directory contents (for debugging)
+      # Step 5: List directory contents (for debugging)
       - name: List directory contents
         run: ls -la
 
-      # Step 4: Check SARIF file content (for debugging)
+      # Step 6: Check SARIF file content (for debugging)
       - name: Check SARIF file content
         run: |
           if [ -f snyk.sarif ]; then
@@ -54,14 +56,14 @@ jobs:
             echo "SARIF file does not exist."
           fi
 
-      # Step 5: Upload SARIF file
+      # Step 7: Upload SARIF file
       - name: Upload SARIF file
         uses: github/codeql-action/upload-sarif@v3
         with:
           sarif_file: snyk.sarif
           category: snyk
 
-      # Step 6: Generate HTML report from JSON (optional)
+      # Step 8: Generate HTML report from JSON (optional)
       - name: Generate HTML report
         run: |
           npm install -g snyk-to-html
@@ -72,7 +74,7 @@ jobs:
           fi
         continue-on-error: true
 
-      # Step 7: Upload Snyk HTML report as artifact (optional)
+      # Step 9: Upload Snyk HTML report as artifact (optional)
       - name: Upload Snyk HTML report
         uses: actions/upload-artifact@v3
         with:
