@@ -31,7 +31,7 @@ jobs:
       
       # Step 3: Install project dependencies
       - name: Install project dependencies
-        run: npm ci
+        run: npm install
       
       # Step 4: Install and run Snyk
       - name: Run Snyk to check for vulnerabilities
