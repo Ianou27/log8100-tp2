@@ -73,6 +73,7 @@ jobs:
     permissions:
       pages: write
       id-token: write
+      contents: write  # Added for enabling Pages
 
     environment:
       name: github-pages
@@ -81,6 +82,12 @@ jobs:
     steps:
       - name: Checkout
         uses: actions/checkout@v3
+
+      - name: Enable GitHub Pages
+        run: |
+          gh api repos/${{ github.repository }}/pages -F source.branch=main -F source.path=/docs
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
       - name: Setup Pages
         uses: actions/configure-pages@v3
