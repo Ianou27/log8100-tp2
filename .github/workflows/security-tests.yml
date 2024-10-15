@@ -27,6 +27,7 @@ jobs:
         uses: actions/setup-node@v3
         with:
           node-version: 8.17.0
+      
       - name: Install dependencies
         run: npm install
         
@@ -34,16 +35,18 @@ jobs:
       - name: Set up Snyk
         uses: snyk/actions/setup@master
       
-      # Step 3: Run Snyk to check for vulnerabilities
+      # Step 3: Run Snyk to check for vulnerabilities and generate SARIF
       - name: Run Snyk to check for vulnerabilities
-        uses: snyk/actions/node@master
+        run: snyk test --json | snyk-to-html -o snyk-results.html
         continue-on-error: true
         env:
           SNYK_TOKEN: ${{ secrets.SNYK_TOKEN }}
 
-      # Step 4: Run Snyk Test and generate SARIF file
-      - name: Run Snyk test
-        run: snyk test --sarif-file-output=snyk.sarif
+      # Step 4: Generate SARIF file from Snyk results
+      - name: Generate SARIF file
+        run: |
+          npm install -g @snyk/snyk-sarif-parser
+          snyk test --json | snyk-sarif-parser > snyk.sarif
         continue-on-error: true
         env:
           SNYK_TOKEN: ${{ secrets.SNYK_TOKEN }}
@@ -54,3 +57,10 @@ jobs:
         with:
           sarif_file: snyk.sarif
           category: snyk
+
+      # Step 6: Upload Snyk HTML report as artifact
+      - name: Upload Snyk HTML report
+        uses: actions/upload-artifact@v3
+        with:
+          name: snyk-results
+          path: snyk-results.html
