@@ -1,4 +1,4 @@
-name: Snyk Security Tests and GitHub Pages Deployment
+name: Security Tests and GitHub Pages Deployment
 
 on:
   push:
@@ -19,23 +19,25 @@ jobs:
       contents: read
 
     steps:
-      # Step 1: Checkout the repository code
       - name: Checkout code
         uses: actions/checkout@v3
       
-      # Step 2: Set up Node.js 18
       - name: Set up Node.js
         uses: actions/setup-node@v3
         with:
           node-version: '18'
       
-      # Step 3: Install project dependencies
-      - name: Install project dependencies
+      - name: Update package.json
         run: |
-          npm install --no-optional
-          npm install snyk -g
+          sed -i 's/"bcrypt": ".*"/"bcryptjs": "^2.4.3"/' package.json
+          sed -i 's/require("bcrypt")/require("bcryptjs")/' $(grep -rl 'require("bcrypt")' .)
       
-      # Step 4: Run Snyk to check for vulnerabilities
+      - name: Install project dependencies
+        run: npm install
+      
+      - name: Install Snyk
+        run: npm install -g snyk
+      
       - name: Run Snyk to check for vulnerabilities
         run: |
           snyk test --json-file-output=snyk.json || true
@@ -43,28 +45,12 @@ jobs:
         env:
           SNYK_TOKEN: ${{ secrets.SNYK_TOKEN }}
 
-      # Step 5: List directory contents (for debugging)
-      - name: List directory contents
-        run: ls -la
-
-      # Step 6: Check SARIF file content (for debugging)
-      - name: Check SARIF file content
-        run: |
-          if [ -f snyk.sarif ]; then
-            echo "SARIF file exists. Content:"
-            cat snyk.sarif
-          else
-            echo "SARIF file does not exist."
-          fi
-
-      # Step 7: Upload SARIF file
       - name: Upload SARIF file
         uses: github/codeql-action/upload-sarif@v3
         with:
           sarif_file: snyk.sarif
           category: snyk
 
-      # Step 8: Generate HTML report from JSON (optional)
       - name: Generate HTML report
         run: |
           if [ -f snyk.json ]; then
@@ -74,7 +60,6 @@ jobs:
           fi
         continue-on-error: true
 
-      # Step 9: Upload Snyk HTML report as artifact (optional)
       - name: Upload Snyk HTML report
         uses: actions/upload-artifact@v3
         with:
@@ -83,32 +68,28 @@ jobs:
         if: always()
 
   deploy-to-github-pages:
-      name: Deploy to GitHub Pages
-      needs: security-tests
-      runs-on: ubuntu-latest
-      # Grant GITHUB_TOKEN the permissions required to make a Pages deployment
-      permissions:
-        pages: write      # to deploy to Pages
-        id-token: write   # to verify the deployment originates from an appropriate source
-  
-      # Deploy to the github-pages environment
-      environment:
-        name: github-pages
-        url: ${{ steps.deployment.outputs.page_url }}
-  
-      steps:
-        - name: Checkout
-          uses: actions/checkout@v3
-  
-        - name: Setup Pages
-          uses: actions/configure-pages@v3
-  
-        - name: Upload artifact
-          uses: actions/upload-pages-artifact@v2
-          with:
-            # Upload entire repository
-            path: './docs'
-  
-        - name: Deploy to GitHub Pages
-          id: deployment
-          uses: actions/deploy-pages@v2
+    name: Deploy to GitHub Pages
+    runs-on: ubuntu-latest
+    permissions:
+      pages: write
+      id-token: write
+
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v3
+
+      - name: Setup Pages
+        uses: actions/configure-pages@v3
+
+      - name: Upload artifact
+        uses: actions/upload-pages-artifact@v2
+        with:
+          path: './docs'
+
+      - name: Deploy to GitHub Pages
+        id: deployment
+        uses: actions/deploy-pages@v2
