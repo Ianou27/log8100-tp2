@@ -33,32 +33,49 @@ jobs:
         
       # Step 2: Run Snyk to check for vulnerabilities and generate SARIF
       - name: Run Snyk to check for vulnerabilities
-        uses: snyk/actions/node@master
-        continue-on-error: true
+        run: |
+          npm install -g snyk
+          snyk test --json-file-output=snyk.json || true
+          snyk test --sarif-file-output=snyk.sarif || true
         env:
           SNYK_TOKEN: ${{ secrets.SNYK_TOKEN }}
-        with:
-          command: test --sarif-file-output=snyk.sarif
 
-      # Step 3: Upload SARIF file
+      # Step 3: List directory contents (for debugging)
+      - name: List directory contents
+        run: ls -la
+
+      # Step 4: Check SARIF file content (for debugging)
+      - name: Check SARIF file content
+        run: |
+          if [ -f snyk.sarif ]; then
+            echo "SARIF file exists. Content:"
+            cat snyk.sarif
+          else
+            echo "SARIF file does not exist."
+          fi
+
+      # Step 5: Upload SARIF file
       - name: Upload SARIF file
         uses: github/codeql-action/upload-sarif@v3
         with:
           sarif_file: snyk.sarif
           category: snyk
 
-      # Step 4: Generate HTML report (optional)
+      # Step 6: Generate HTML report from JSON (optional)
       - name: Generate HTML report
         run: |
           npm install -g snyk-to-html
-          snyk test --json | snyk-to-html -o snyk-results.html
+          if [ -f snyk.json ]; then
+            cat snyk.json | snyk-to-html -o snyk-results.html
+          else
+            echo "JSON file does not exist. Cannot generate HTML report."
+          fi
         continue-on-error: true
-        env:
-          SNYK_TOKEN: ${{ secrets.SNYK_TOKEN }}
 
-      # Step 5: Upload Snyk HTML report as artifact (optional)
+      # Step 7: Upload Snyk HTML report as artifact (optional)
       - name: Upload Snyk HTML report
         uses: actions/upload-artifact@v3
         with:
           name: snyk-results
           path: snyk-results.html
+        if: always()
