@@ -31,34 +31,32 @@ jobs:
       - name: Install dependencies
         run: npm install
         
-      # Step 2: Set up Snyk
-      - name: Set up Snyk
-        uses: snyk/actions/setup@master
-      
-      # Step 3: Run Snyk to check for vulnerabilities and generate SARIF
+      # Step 2: Run Snyk to check for vulnerabilities and generate SARIF
       - name: Run Snyk to check for vulnerabilities
-        run: snyk test --json | snyk-to-html -o snyk-results.html
+        uses: snyk/actions/node@master
         continue-on-error: true
         env:
           SNYK_TOKEN: ${{ secrets.SNYK_TOKEN }}
+        with:
+          command: test --sarif-file-output=snyk.sarif
 
-      # Step 4: Generate SARIF file from Snyk results
-      - name: Generate SARIF file
-        run: |
-          npm install -g @snyk/snyk-sarif-parser
-          snyk test --json | snyk-sarif-parser > snyk.sarif
-        continue-on-error: true
-        env:
-          SNYK_TOKEN: ${{ secrets.SNYK_TOKEN }}
-
-      # Step 5: Upload SARIF file
+      # Step 3: Upload SARIF file
       - name: Upload SARIF file
         uses: github/codeql-action/upload-sarif@v3
         with:
           sarif_file: snyk.sarif
           category: snyk
 
-      # Step 6: Upload Snyk HTML report as artifact
+      # Step 4: Generate HTML report (optional)
+      - name: Generate HTML report
+        run: |
+          npm install -g snyk-to-html
+          snyk test --json | snyk-to-html -o snyk-results.html
+        continue-on-error: true
+        env:
+          SNYK_TOKEN: ${{ secrets.SNYK_TOKEN }}
+
+      # Step 5: Upload Snyk HTML report as artifact (optional)
       - name: Upload Snyk HTML report
         uses: actions/upload-artifact@v3
         with:
