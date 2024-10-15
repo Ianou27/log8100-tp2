@@ -17,7 +17,7 @@ jobs:
     steps:
       # Step 1: Checkout the repository code
       - name: Checkout code
-        uses: actions/checkout@master
+        uses: actions/checkout@v3
       
       - name: Get Node v8
         uses: actions/setup-node@v3
@@ -26,32 +26,26 @@ jobs:
       - name: Install dependencies
         run: npm install
         
-      # Step 3: Set up Snyk
+      # Step 2: Set up Snyk
       - name: Set up Snyk
         uses: snyk/actions/setup@master
-
+      
+      # Step 3: Run Snyk to check for vulnerabilities
       - name: Run Snyk to check for vulnerabilities
         uses: snyk/actions/node@master
         continue-on-error: true
         env:
           SNYK_TOKEN: ${{ secrets.SNYK_TOKEN }}
 
-      # Step 4: Run Snyk Test on dvna-master directory
+      # Step 4: Run Snyk Test and generate SARIF file
       - name: Run Snyk test
         run: snyk test --sarif-file-output=snyk.sarif
         continue-on-error: true
         env:
           SNYK_TOKEN: ${{ secrets.SNYK_TOKEN }}
 
-      # Step 5: Upload Snyk Report
-      #- name: Upload Snyk Report
-      #  uses: actions/upload-artifact@v3
-      #  with:
-      #    name: Snyk Report
-      #    path: snyk_report.html
-
+      # Step 5: Upload SARIF file
       - name: Upload SARIF file
-        uses: github/codeql-action/upload-sarif@v3
+        uses: github/codeql-action/upload-sarif@v2
         with:
-          # Path to SARIF file relative to the root of the repository
           sarif_file: snyk.sarif
