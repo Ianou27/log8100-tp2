@@ -12,6 +12,7 @@ jobs:
       contents: read
       attestations: write
       id-token: write
+
     steps:
       # Step 1: Check out the repo
       - name: Check out the repo
@@ -24,15 +25,20 @@ jobs:
           username: ${{ secrets.DOCKER_USERNAME }}
           password: ${{ secrets.DOCKER_PASSWORD }}
 
-      # Step 4: Build and push Docker image
-      - name: Build and push Docker image
-        env:
-          POSTGRES_USER: ${{ secrets.POSTGRES_USER }}
-          POSTGRES_DB: ${{ secrets.POSTGRES_DB }}
-          POSTGRES_PASSWORD: ${{ secrets.POSTGRES_PASSWORD }}
-          POSTGRES_HOST: ${{ secrets.POSTGRES_HOST }}
-          POSTGRES_PORT: ${{ secrets.POSTGRES_PORT }}
-          DATABASE_URL: ${{ secrets.DATABASE_URL }}
+      # Step 3: Build and tag the Docker image
+      - name: Build and tag Docker image
         run: |
           docker compose -f docker-compose.yml build
-          docker compose -f docker-compose.yml push
+          docker tag ianou27/log8100_tp2:latest ianou27/log8100_tp2:${{ github.sha }}
+
+      # Step 4: Push the Docker image to Docker Hub
+      - name: Push Docker image to Docker Hub
+        run: |
+          docker push ianou27/log8100_tp2:${{ github.sha }}
+          docker push ianou27/log8100_tp2:latest
+
+      # Step 5: Clean up Docker images locally
+      - name: Clean up Docker images
+        run: |
+          docker rmi ianou27/log8100_tp2:${{ github.sha }}
+          docker rmi ianou27/log8100_tp2:latest
