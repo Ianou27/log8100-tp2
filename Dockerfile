@@ -3,26 +3,31 @@ LABEL MAINTAINER "Subash SN"
 
 WORKDIR /app
 
+# Install curl and dependencies
 RUN apt-get update && \
     apt-get install -y curl iputils-ping wget && \
-    curl -o- https://raw.githubusercontent.com/nvm-sh/nvm/v0.39.1/install.sh | bash && \
-    bash -c "source ~/.nvm/nvm.sh && nvm install 8.17.0 && nvm use 8.17.0 && nvm alias default 8.17.0 && nvm install-latest-npm"
+    curl -o- https://raw.githubusercontent.com/nvm-sh/nvm/v0.39.1/install.sh | bash
 
+# Set up NVM environment variables
 ENV NVM_DIR="/root/.nvm"
 ENV NODE_VERSION="8.17.0"
-ENV NVM_SYMLINK_CURRENT=true
 ENV PATH="$NVM_DIR/versions/node/v$NODE_VERSION/bin:$PATH"
 
+# Install Node.js and NPM through NVM
+RUN bash -c "source $NVM_DIR/nvm.sh && nvm install $NODE_VERSION && nvm use $NODE_VERSION && nvm alias default $NODE_VERSION && nvm install-latest-npm"
+
+# Copy the package.json and install dependencies
 COPY package*.json ./
+RUN bash -c "source $NVM_DIR/nvm.sh && npm install"
 
-COPY vars*.env ./
-
+# Copy the remaining app code
 COPY . .
 
-RUN . ~/.nvm/nvm.sh && npm install -g nodemon && npm install
-RUN . ~/.nvm/nvm.sh && npm rebuild libxmljs
-RUN . ~/.nvm/nvm.sh && npm uninstall bcrypt && npm install bcrypt
+# Rebuild necessary native packages
+RUN bash -c "source $NVM_DIR/nvm.sh && npm rebuild libxmljs && npm uninstall bcrypt && npm install bcrypt"
 
+# Expose the necessary port
 EXPOSE 9090
 
-CMD ["/bin/bash", "-c", ". ~/.nvm/nvm.sh && npm start"]
+# Run the application
+CMD ["bash", "-c", "source $NVM_DIR/nvm.sh && npm start"]
