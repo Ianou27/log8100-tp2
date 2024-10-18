@@ -6,8 +6,8 @@ var Sequelize = require("sequelize");
 var env = process.env.NODE_ENV || "development";
 var config = require("../config/db.js")
 
-if (process.env.DATABASE_URL) {
-  var sequelize = new Sequelize(process.env.DATABASE_URL, {
+if (process.env.databaseurl) {
+  var sequelize = new Sequelize(process.env.databaseurl, {
     dialectOptions: {
       ssl: {
         require: true
