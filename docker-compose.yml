@@ -10,8 +10,6 @@ services:
       - db
     networks:
       - dvnaNet
-    environment:
-      DATABASE_URL: "postgres://default:w5eb9VyfilIj@ep-noisy-queen-a4fnpu0f-pooler.us-east-1.aws.neon.tech:5432/verceldb?sslmode=require"
 
 
   db:
@@ -23,10 +21,6 @@ services:
       - dvnaNet
     volumes:
       - db_data:/var/lib/postgresql/data
-    environment:
-      POSTGRES_USER: "default"
-      POSTGRES_DB: "verceldb"
-      POSTGRES_PASSWORD: "w5eb9VyfilIj"
 
 networks:
   dvnaNet:
