@@ -11,11 +11,6 @@ services:
     networks:
       - dvnaNet
     environment:
-      POSTGRES_USER: "default"
-      POSTGRES_DB: "verceldb"
-      POSTGRES_PASSWORD: "w5eb9VyfilIj"
-      POSTGRES_HOST: "ep-noisy-queen-a4fnpu0f-pooler.us-east-1.aws.neon.tech"
-      POSTGRES_PORT: "5432"
       DATABASE_URL: "postgres://default:w5eb9VyfilIj@ep-noisy-queen-a4fnpu0f-pooler.us-east-1.aws.neon.tech:5432/verceldb?sslmode=require"
 
 

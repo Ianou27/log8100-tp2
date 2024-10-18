@@ -7,12 +7,23 @@ var env = process.env.NODE_ENV || "development";
 var config = require("../config/db.js")
 
 if (process.env.DATABASE_URL) {
-  var sequelize = new Sequelize(process.env.DATABASE_URL);
+  var sequelize = new Sequelize(process.env.DATABASE_URL, {
+    dialectOptions: {
+      ssl: {
+        require: true
+        }
+    },
+  });
 } else {
   var sequelize = new Sequelize(config.database, config.username, config.password, {
-    host: "dvna_db",
+    host: config.host,
     dialect: "postgres",
     port: 5432,
+    dialectOptions: {
+      ssl: {
+        require: true
+        }
+    },
   });
 }
 
