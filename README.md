@@ -6,13 +6,11 @@
 
 ------
 
-```markdown
+
 # Random Web APP
 
 Welcome to the setup guide for the Random Web APP. You can either use the official Docker image or set up the application manually by following the instructions below.
 
-## Using Official Docker Image
-_TODO: Provide instructions for using the official Docker image_
 
 ## Manual Setup
 
